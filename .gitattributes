@@ -1,0 +1,37 @@
+# 统一换行与编码处理 —— 宪法 §5.3
+# 目标：禁止 CRLF 入库，文本文件一律 LF（跨 Windows / Linux 一致）
+
+# 默认：自动识别文本，检出时用 LF
+* text=auto eol=lf
+
+# 显式声明文本类型（避免被当作二进制，保证可 diff）
+*.py     text eol=lf
+*.md     text eol=lf
+*.json   text eol=lf
+*.js     text eol=lf
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.vue    text eol=lf
+*.css    text eol=lf
+*.html   text eol=lf
+*.ps1    text eol=lf
+*.sh     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+
+# 二进制：不做换行转换，也不生成 diff
+*.db      binary
+*.faiss   binary
+*.whl     binary
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.ico     binary
+*.pdf     binary
+*.woff    binary
+*.woff2   binary
+*.ttf     binary
+
+# 锁文件不参与语言统计
+package-lock.json  linguist-generated=true

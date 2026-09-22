@@ -1,0 +1,34 @@
+# 敏感凭据（GitHub Token / API Key / SSH 密码）——绝不提交到 git
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# 索引/缓存/图谱（本地生成，可重建，不入库）
+*.db
+*.db-wal
+*.db-shm
+library/models/
+*.faiss
+rag_core/data/
+
+# 本地下载/日志
+*.whl
+*.log
+
+# 前端构建产物
+node_modules/
+dist/
+.vite/
+
+# 系统
+.DS_Store
+Thumbs.db
+
+# SDD 工作区（本地产物，不入库）
+.superpowers/

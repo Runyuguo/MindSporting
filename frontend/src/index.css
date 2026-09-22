@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+
+/*
+ * `static` 关闭 Tailwind v4 的主题变量裁剪：默认情况下，未被任何生成工具类引用的
+ * @theme 变量不会出现在构建产物中。后续组件通过 arbitrary value 消费这些令牌
+ * （如 `duration-[var(--duration-fast)]`、`shadow-[var(--shadow-sm)]`、
+ * `text-[var(--text-2xl)]`、`style={{ animationDuration: 'var(--duration-slow)' }}`），
+ * Tailwind 只能原样输出该声明、看不到其中的 var() 引用，于是变量定义会被静默裁掉，
+ * 组件最终拿到一条无效声明。`static` 让所有声明的令牌无条件输出。
+ */
+@theme static {
+  /* 中性色阶：深色为默认（科技感锚点：Linear / Vercel / Raycast 的克制） */
+  --color-bg: oklch(0.16 0.012 260);
+  --color-surface: oklch(0.21 0.014 260);
+  --color-fg: oklch(0.96 0.004 260);
+  --color-muted: oklch(0.66 0.012 260);
+  --color-border: oklch(1 0 0 / 0.08);
+
+  /* 单一主色相，仅用于交互与强调 */
+  --color-accent: oklch(0.68 0.14 205);
+  --color-accent-fg: oklch(0.14 0.02 260);
+
+  /* 品牌标题渐变的**起点色**（spec「艺术化呈现」要求文字有颜色渐变）。
+     为什么不直接用 `--color-accent`：渐变起点也是**文字颜色**，必须过 AA。
+     accent 在暗色主题下是文字级（7.35:1），但它在浅色主题下与浅底只有 2.57:1
+     （L=0.68 太亮）⇒ 浅色主题单独压暗到 0.52（4.85:1），暗色主题保持原样。
+     两端点都是既有色相 205，观感仍是同一条渐变。 */
+  --color-brand-start: oklch(0.68 0.14 205);
+
+  /* 文字底板（plan §12.6）：背景有两层装饰动效，正文必须有块级底板才可读。
+     半透明 —— 底板在，背景的呼吸感也还在；**块级**施加，不逐词高亮。 */
+  --color-panel: oklch(0.21 0.014 260 / 0.74);
+  --color-panel-border: oklch(1 0 0 / 0.06);
+
+  --color-success: oklch(0.72 0.13 150);
+  --color-warning: oklch(0.78 0.13 80);
+  --color-danger: oklch(0.66 0.18 25);
+
+  /* 字号阶梯 */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+
+  /* 圆角 6 / 10 / 14 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* 动效 150–250ms */
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* 仅 2 档阴影，且极淡；层次主要靠边框 */
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.2);
+  --shadow-md: 0 4px 12px oklch(0 0 0 / 0.25);
+}
+
+html[data-theme='light'] {
+  --color-bg: oklch(0.99 0.002 260);
+  --color-surface: oklch(1 0 0);
+  --color-fg: oklch(0.2 0.01 260);
+  --color-muted: oklch(0.5 0.012 260);
+  --color-border: oklch(0 0 0 / 0.1);
+  /* 浅色下的底板：比正文更亮一点，同样半透明 */
+  --color-panel: oklch(1 0 0 / 0.76);
+  --color-panel-border: oklch(0 0 0 / 0.08);
+  /* 品牌渐变起点：浅底上压暗到 4.85:1（accent 原值只有 2.57:1，做文字色不合格）。
+     色相 205 与 accent 相同，故渐变观感一致。 */
+  --color-brand-start: oklch(0.52 0.12 205);
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: system-ui, 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-weight: 400;
+}
+
+/* 引用编号用等宽数字，提升科技感与可读性 */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * 滚动条：**几乎不可见的半透明细条**，悬停/聚焦时高亮（使用者 2026-09-19 要求，
+ * 参照 DSH 内的样式）。
+ *
+ * 两条实现路径都写，因为它们覆盖的浏览器不同（与 DSH 的做法一致）：
+ * - `scrollbar-width` / `scrollbar-color`：标准属性，Firefox 与较新的 Chromium 用；
+ * - `::-webkit-scrollbar-*`：WebKit/Blink 用，且**只有它能表达"悬停变色"**。
+ *
+ * 细到 8px、拇指做成胶囊、轨道透明：默认几乎看不见，只在指针扫过时浮出。
+ * 颜色取既有令牌 `--color-muted` 的透明变体（不新增色值，两种主题自动跟随）。
+ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--color-muted) 40%, transparent) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--color-muted) 32%, transparent);
+  /* 透明边框 + `background-clip: padding-box`：让拇指比轨道更细，
+     留出呼吸感（DSH 用的同一手法）。 */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in oklab, var(--color-muted) 70%, transparent);
+}
+
+/* 拇指与轨道交界处的两条箭头按钮在暗色下是显眼的浅色方块，直接去掉 */
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* 两条滚动条相交的角落：不画，避免右下角出现一个方块 */
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/*
+ * 尊重减少动态（spec §4「尊重减少动态」Scenario / SC-24 的「动效 = 0」）。
+ *
+ * 全站只有两处动效：两层背景装饰（`Backdrop`）与思考面板开合按钮的 `transition-colors`。
+ * 前者本就是装饰，后者是唯一的交互过渡 —— 系统声明减少动态时一律关掉时长。
+ *
+ * **只关时长，不藏内容**：这里没有任何 display / visibility / content 声明，
+ * 思考文本与阶段信息在减少动态下依然可达（Scenario 的硬要求：减少动态不等于少给信息）。
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

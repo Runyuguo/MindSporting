@@ -1,0 +1,26 @@
+{
+  "lib": "ai4s",
+  "workspace": "<WORKSPACE>",
+  "vault_path": "<VAULT_PATH>",
+  "env_var": "AI4S_VAULT_PATH",
+  "index_db": "<INDEX_DB>",
+  "faiss_index": "<FAISS_INDEX>",
+  "sources": { "metadata": false, "extracted": false, "weekly_watch": false, "vault": true },
+  "allowed_prefixes": ["01-Literature", "02-Surveys", "03-Reading"],
+  "chunk": { "max_chars": 500, "overlap": 0 },
+  "search": { "topn": 8, "rrf_k": 60, "min_bm25": null, "min_cos": null, "evidence_char_budget": 4000,
+              "ann_over_fetch": 3, "ann_over_fetch_filtered": 8, "ann_ef_search": 1024,
+              "ann_hnsw_m": 64, "ann_hnsw_ef_construction": 200 },
+  "generate": {
+    "divergence": { "temperature_min": 0.1, "temperature_max": 1.2,
+                    "top_p_min": 0.5, "top_p_max": 0.95 },
+    "length": { "tolerance": 0.10, "max_retry": 1, "chars_per_token": 1.5 },
+    "topn": { "min": 10, "max": 30, "default": 10 },
+    "thinking": { "enabled": true }
+  },
+  "rewrite": { "enabled": true, "history_rounds": 3, "max_chars": 6000, "timeout_s": 8 },
+  "llm": { "request_timeout_s": 120 },
+  "embed": { "model": "BAAI/bge-m3", "dim": 1024, "batch": 32 },
+  "rerank": { "model": "<RERANK_MODEL>", "topk": 50, "final_topn": 8 },
+  "folder_kind": { "00-MOC": "moc", "01-Literature": "note", "02-Surveys": "survey", "03-Reading": "reading", "OCR": "ocr" }
+}
